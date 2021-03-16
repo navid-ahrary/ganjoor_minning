@@ -28,6 +28,17 @@ async function app (pageNumber = 1) {
   };
   const browser = await puppeteer.launch(config);
   const page = await browser.newPage();
+
+  await page.setRequestInterception(true);
+  page.on('request', (req) => {
+    const blockList = ['image', 'font', 'stylesheet']
+    if (blockList.includes(req.resourceType())) {
+      req.abort()
+    } else {
+      req.continue()
+    }
+  })
+
   await page.goto(url);
   
   let poems = '';
