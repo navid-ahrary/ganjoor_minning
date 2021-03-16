@@ -1,0 +1,11 @@
+{
+  "name": "ganjoor_minning",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Navid Ahrary",
+  "license": "ISC",
+  "private": false,
+  "dependencies": {
+    "puppeteer-core": "^8.0.0"
+  }
+}
