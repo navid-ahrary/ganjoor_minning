@@ -30,16 +30,17 @@ async function app () {
   await page.goto(url);
   
   let poems = ''
-
+  let p = 1
   while(true) {
     const result = await page.evaluate(getPoems);
-
     poems += result.join('\n')
     
+    console.log(`#${p++} got`)
+    
+    // save to file
     Fs.appendFileSync('poems.txt', poems)
     
     const nextButton = await page.$('div.navleft')
-    
     if(!Boolean(nextButton)) {
       break;
     }
