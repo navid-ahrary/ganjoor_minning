@@ -31,7 +31,7 @@ async function app (pageNumber = 1) {
 
   await page.setRequestInterception(true);
   page.on('request', (req) => {
-    const blockList = ['image', 'font', 'stylesheet']
+    const blockList = ['image', 'font']
     if (blockList.includes(req.resourceType())) {
       req.abort()
     } else {
