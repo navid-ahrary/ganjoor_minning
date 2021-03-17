@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "Navid Ahrary",
+  "engines": {
+    "node": "^14.0.0"
+  },
+  "scripts": {
+    "start": "node ."
+  },
   "license": "ISC",
   "private": false,
   "dependencies": {
