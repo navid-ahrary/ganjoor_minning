@@ -3,6 +3,7 @@
 const puppeteer = require('puppeteer-core')
 const Fs = require('fs')
 
+const helpers = require('./helpers');
 
 function getPoems () {
   const m1 = document.querySelectorAll('div.m1');
@@ -27,7 +28,7 @@ async function app (pageNumber = 1) {
     ignoreHTTPSErrors: true,
     args: [ '--no-sandbox', '--disable-setuid-sandbox' ],
     dumpio: false,
-    executablePath: '/usr/bin/vivaldi',
+    executablePath: await helpers.findBrowserPath(),
     defaultViewport:{height: 760, width:1366},
     headless: true,
   };
@@ -44,7 +45,6 @@ async function app (pageNumber = 1) {
       req.continue()
     }
   })
-  // "document" | "stylesheet" | "image" | "media" | "font" | "script" | "texttrack" | "xhr" | "fetch" | "eventsource" | "websocket" | "manifest" | "signedexchange" | "ping" | "cspviolationreport" | "preflight" | "other"
 
   await page.goto(url);
   
