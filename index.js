@@ -2,6 +2,7 @@
 
 const puppeteer = require('puppeteer-core')
 const Fs = require('fs')
+const OS = require('os')
 
 const helpers = require('./helpers');
 
@@ -22,7 +23,9 @@ async function app (pageNumber = 1) {
 
   var fileName = url.split('ganjoor.net/')[1].split('/')
   fileName.splice(-2, 2)
-  fileName = fileName.join('-') + '.txt'
+  const filePath = OS.homedir() + '/Desktop/' + fileName.join('-') + '.txt'
+
+  console.log(' Data is saving on your Desktop\n')
 
   const config  = {
     ignoreHTTPSErrors: true,
@@ -56,7 +59,7 @@ async function app (pageNumber = 1) {
 
     poems += result.join('\n') + '\n';
 
-    Fs.appendFileSync(fileName, poems);
+    Fs.appendFileSync(filePath, poems);
     
     console.log(' 👍', page.url());
     
