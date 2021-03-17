@@ -59,6 +59,7 @@ async function app (pageNumber = 1) {
     console.log(' 👍', page.url());
     
     const nextButton = await page.$('div.navleft');
+    console.log(Boolean(nextButton))
 
     if(!Boolean(nextButton)) {
       break;
