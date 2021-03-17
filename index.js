@@ -29,7 +29,7 @@ async function app (pageNumber = 1) {
     dumpio: false,
     executablePath: '/usr/bin/vivaldi',
     defaultViewport:{height: 760, width:1366},
-    headless: true,
+    headless: false,
   };
   const browser = await puppeteer.launch(config);
   const page = await browser.newPage();
@@ -48,8 +48,10 @@ async function app (pageNumber = 1) {
 
   await page.goto(url);
   
+  let countOfAnalyzedPage = 1
   let poems = '';
   while(true) {
+
     const result = await page.evaluate(getPoems);
 
     poems += result.join('\n') + '\n';
@@ -58,16 +60,22 @@ async function app (pageNumber = 1) {
     
     console.log(' 👍', page.url());
     
-    const nextButton = await page.$('div.navleft');
-    console.log(Boolean(nextButton))
-
-    if(!Boolean(nextButton)) {
-      break;
-    }
-
-    await nextButton.click();
+    const nextPageAvailable = await page.evaluate(() => {
+      const select = document.querySelector('div.navleft')
+      
+      return Boolean(select.children.length)
+    });
+    
+    if(!nextPageAvailable) break;
+    
+    const nexButton = await page.$('div.navleft')
+    await nexButton.click();
     await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+    
+    countOfAnalyzedPage++;
   } 
+
+  console.log(`\n 🖖 Result: "${countOfAnalyzedPage}" pages analyzed`)
 
   await browser.close();
 };
