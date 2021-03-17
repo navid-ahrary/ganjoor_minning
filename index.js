@@ -17,7 +17,12 @@ function getPoems () {
 }
 
 async function app (pageNumber = 1) {
-  const url = `https://ganjoor.net/moulavi/shams/ghazalsh/sh${pageNumber}/`;
+  const url = `https://ganjoor.net/hafez/ghazal/sh${pageNumber}/`;
+
+  var fileName = url.split('ganjoor.net/')[1].split('/')
+  fileName.splice(-2, 2)
+  fileName = fileName.join('-') + '.txt'
+
   const config  = {
     ignoreHTTPSErrors: true,
     args: [ '--no-sandbox', '--disable-setuid-sandbox' ],
@@ -31,13 +36,15 @@ async function app (pageNumber = 1) {
 
   await page.setRequestInterception(true);
   page.on('request', (req) => {
-    const blockList = ['image', 'font']
+    const blockList = ['image', 'font', 'media', 'xhr', 'texttrack', 'script']
+
     if (blockList.includes(req.resourceType())) {
       req.abort()
     } else {
       req.continue()
     }
   })
+  // "document" | "stylesheet" | "image" | "media" | "font" | "script" | "texttrack" | "xhr" | "fetch" | "eventsource" | "websocket" | "manifest" | "signedexchange" | "ping" | "cspviolationreport" | "preflight" | "other"
 
   await page.goto(url);
   
@@ -47,11 +54,12 @@ async function app (pageNumber = 1) {
 
     poems += result.join('\n') + '\n';
 
-    Fs.appendFileSync('poems.txt', poems);
+    Fs.appendFileSync(fileName, poems);
     
-    console.log(`Page #${pageNumber++} got`);
+    console.log(' 👍', page.url());
     
     const nextButton = await page.$('div.navleft');
+
     if(!Boolean(nextButton)) {
       break;
     }
