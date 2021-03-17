@@ -29,7 +29,7 @@ async function app (pageNumber = 1) {
     dumpio: false,
     executablePath: '/usr/bin/vivaldi',
     defaultViewport:{height: 760, width:1366},
-    headless: false,
+    headless: true,
   };
   const browser = await puppeteer.launch(config);
   const page = await browser.newPage();
