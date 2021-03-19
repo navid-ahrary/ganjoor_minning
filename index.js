@@ -33,14 +33,16 @@ async function app (pageNumber = 1) {
     dumpio: false,
     executablePath: await helpers.findBrowserPath(),
     defaultViewport:{height: 760, width:1366},
-    headless: true,
+    headless: false,
   };
   const browser = await puppeteer.launch(config);
   const page = await browser.newPage();
 
   await page.setRequestInterception(true);
   page.on('request', (req) => {
-    const blockList = ['image', 'font', 'media', 'xhr', 'texttrack', 'script']
+    const blockList = [
+      'image', 'font', 'media', 'xhr', 'texttrack', 'script', 'sub_frame', 'object_subrequest'
+    ]
 
     if (blockList.includes(req.resourceType())) {
       req.abort()
@@ -72,8 +74,9 @@ async function app (pageNumber = 1) {
     if(!nextPageAvailable) break;
     
     const nexButton = await page.$('div.navleft')
+
     await nexButton.click();
-    await page.waitForNavigation({waitUntil: 'domcontentloaded'});
+    await page.waitForNavigation({waitUntil: 'load'});
     
     countOfAnalyzedPage++;
   } 
