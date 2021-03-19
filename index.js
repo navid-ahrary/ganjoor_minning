@@ -32,8 +32,7 @@ async function app (pageNumber = 1) {
     args: [ '--no-sandbox', '--disable-setuid-sandbox' ],
     dumpio: false,
     executablePath: await helpers.findBrowserPath(),
-    defaultViewport:{height: 760, width:1366},
-    headless: false,
+    headless: true,
   };
   const browser = await puppeteer.launch(config);
   const page = await browser.newPage();
@@ -41,7 +40,7 @@ async function app (pageNumber = 1) {
   await page.setRequestInterception(true);
   page.on('request', (req) => {
     const blockList = [
-      'image', 'font', 'media', 'xhr', 'texttrack', 'script', 'sub_frame', 'object_subrequest'
+      'image', 'font', 'media', 'xhr', 'texttrack', 'script', 'sub_frame'
     ]
 
     if (blockList.includes(req.resourceType())) {
@@ -53,35 +52,34 @@ async function app (pageNumber = 1) {
 
   await page.goto(url);
   
-  let countOfAnalyzedPage = 1
   let poems = '';
-  while(true) {
-
+  let numberOfAnalyzedPage = 1;
+  let nextPageAvailable = false;
+  do {
     const result = await page.evaluate(getPoems);
-
+  
     poems += result.join('\n') + '\n';
-
+  
     Fs.appendFileSync(filePath, poems);
     
-    console.log(' 👍', page.url());
+    console.log(` 👍 Poem #${numberOfAnalyzedPage} done`);
     
-    const nextPageAvailable = await page.evaluate(() => {
+    nextPageAvailable = await page.evaluate(() => {
       const select = document.querySelector('div.navleft')
       
       return Boolean(select.children.length)
     });
-    
-    if(!nextPageAvailable) break;
-    
+        
     const nexButton = await page.$('div.navleft')
-
+  
     await nexButton.click();
     await page.waitForNavigation({waitUntil: 'load'});
     
-    countOfAnalyzedPage++;
-  } 
+    numberOfAnalyzedPage++;
+  } while (nextPageAvailable);
 
-  console.log(`\n 🖖 Result: "${countOfAnalyzedPage}" pages analyzed`)
+
+  console.log(`\n ========== 🖖 Result: "${numberOfAnalyzedPage}" pages analyzed ==========`)
 
   await browser.close();
 };
