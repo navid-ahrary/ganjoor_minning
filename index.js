@@ -25,7 +25,7 @@ async function app (pageNumber = 1) {
   fileName.splice(-2, 2)
   const filePath = OS.homedir() + '/Desktop/' + fileName.join('-') + '.txt'
 
-  console.log(' Data is saving on your Desktop\n')
+  console.log(` Data will save on Desktop\n`)
 
   const config  = {
     ignoreHTTPSErrors: true,
